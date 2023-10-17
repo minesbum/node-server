@@ -22,26 +22,26 @@ function guardarTareas() {
     fs.writeFileSync('tareas.json', JSON.stringify(listaTareas));
 }
 
-function añadirTarea(indicador, descripcion, estado) {
+function añadirTarea(id, descripcion, estado) {
     return new Promise((resolve, reject) => {
-        listaTareas.push({ indicador, descripcion, estado });
+        listaTareas.push({ id, descripcion, estado });
         guardarTareas();
         resolve('Tarea añadida con éxito.');
     });
 }
 
-function eliminarTarea(indicador) {
+function eliminarTarea(id) {
     return new Promise((resolve, reject) => {
-        listaTareas = listaTareas.filter(tarea => tarea.indicador !== indicador);
+        listaTareas = listaTareas.filter(tarea => tarea.id !== id);
         guardarTareas();
         resolve('Tarea eliminada con éxito.');
     });
 }
 
-function completarTarea(indicador) {
+function completarTarea(id) {
     return new Promise((resolve, reject) => {
         listaTareas = listaTareas.map(tarea => {
-            if (tarea.indicador === indicador) {
+            if (tarea.id === id) {
                 tarea.estado = 'completada';
             }
             return tarea;
@@ -60,10 +60,10 @@ function mostrarTareasPendientes() {
 function preguntarOpcion() {
     rl.question(chalk.yellow('Escribe "añadir", "eliminar" o "completar" para gestionar tareas / "salir" para cerrar el programa: '), async (respuesta) => {
         if (respuesta === 'añadir') {
-            rl.question(chalk.cyan('Escribe el indicador de la tarea: '), async (indicador) => {
+            rl.question(chalk.cyan('Escribe el id de la tarea: '), async (id) => {
                 rl.question(chalk.cyan('Escribe la descripción de la tarea: '), async (descripcion) => {
                     try {
-                        await añadirTarea(indicador, descripcion, 'pendiente');
+                        await añadirTarea(id, descripcion, 'pendiente');
                         console.log(chalk.green('Tarea añadida con éxito.'));
                         mostrarTareasPendientes();
                         preguntarOpcion();
@@ -74,9 +74,9 @@ function preguntarOpcion() {
                 });
             });
         } else if (respuesta === 'eliminar') {
-            rl.question(chalk.cyan('Escribe el indicador de la tarea que deseas eliminar: '), async (indicador) => {
+            rl.question(chalk.cyan('Escribe el id de la tarea que deseas eliminar: '), async (id) => {
                 try {
-                    await eliminarTarea(indicador);
+                    await eliminarTarea(id);
                     console.log(chalk.green('Tarea eliminada con éxito.'));
                     mostrarTareasPendientes();
                     preguntarOpcion();
@@ -86,9 +86,9 @@ function preguntarOpcion() {
                 }
             });
         } else if (respuesta === 'completar') {
-            rl.question(chalk.cyan('Escribe el indicador de la tarea que deseas marcar como completada: '), async (indicador) => {
+            rl.question(chalk.cyan('Escribe el id de la tarea que deseas marcar como completada: '), async (id) => {
                 try {
-                    await completarTarea(indicador);
+                    await completarTarea(id);
                     console.log(chalk.green('Tarea marcada como completada con éxito.'));
                     mostrarTareasPendientes();
                     preguntarOpcion();
@@ -113,4 +113,3 @@ preguntarOpcion();
 process.on('exit', () => {
     console.log('Cerrando la aplicación. ¡Hasta luego!');
 });
-
